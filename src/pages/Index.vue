@@ -1,26 +1,30 @@
 <template>
-    <q-page class="flex flex-center">
-        
+	<q-page class="flex flex-center">
 		<div class="well">
-			<venueFilters />
+			<venueFilters
+				@budgetRange="updateBudgetRange"
+				@sortSelected="updateSortSelected"
+			/>
 
 			<!-- <venueList /> -->
 			<!-- <venueHorizontalCards /> -->
-			<venueVerticalCards />
+			<venueVerticalCards
+				:budgetRange="budgetRange"
+				:sortSelected="sortSelected"
+			/>
 		</div>
-
-    </q-page>
+	</q-page>
 </template>
 
 <script>
-import venueFilters from '../components/venueFilters'
-import venueList from '../components/venueList'
-import venueHorizontalCards from '../components/venueHorizontalCards'
-import venueVerticalCards from '../components/venueVerticalCards'
+import venueFilters from "../components/venueFilters";
+import venueList from "../components/venueList";
+import venueHorizontalCards from "../components/venueHorizontalCards";
+import venueVerticalCards from "../components/venueVerticalCards";
 
 export default {
-	name: 'PageIndex',
-	
+	name: "PageIndex",
+
 	components: {
 		venueFilters,
 		venueList,
@@ -28,10 +32,21 @@ export default {
 		venueVerticalCards
 	},
 
-    data() {
-        return {
-            displayList: [],
-        }
-    },
-}
+	data() {
+		return {
+			displayList: [],
+			budgetRange: null,
+			sortSelected: null
+		};
+	},
+
+	methods: {
+		updateBudgetRange(val) {
+			this.budgetRange = val;
+		},
+		updateSortSelected(val) {
+			this.sortSelected = val;
+		}
+	}
+};
 </script>
