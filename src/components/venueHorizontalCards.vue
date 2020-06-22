@@ -2,7 +2,7 @@
         
     <div class="row">
         <div v-if="index < 40" class="col-12 q-pa-sm" v-for="(item, index) in displayList">
-            <q-card class="full-width bg-grey-1" bordered>
+            <q-card class="full-width bg-white shadow-1" bordered>
                 <q-card-section horizontal>
                     <q-img v-if="item.imagesrc" class="col-2" :src="item.imagesrc" stlye="max-width: 100%;" />
                     <q-icon else class="col-2" name="fas fa-home" size="lg" />

@@ -1,52 +1,37 @@
 <template>
-	<q-page class="flex flex-center">
-		<div class="well">
-			<venueFilters
-				@budgetRange="updateBudgetRange"
-				@sortSelected="updateSortSelected"
-			/>
+	<q-page class="flex">
+		
+		<IndexHero />
 
-			<!-- <venueList /> -->
-			<!-- <venueHorizontalCards /> -->
-			<venueVerticalCards
-				:budgetRange="budgetRange"
-				:sortSelected="sortSelected"
-			/>
-		</div>
+		<FeaturedExperiences />
+		
 	</q-page>
 </template>
 
 <script>
-import venueFilters from "../components/venueFilters";
-import venueList from "../components/venueList";
-import venueHorizontalCards from "../components/venueHorizontalCards";
-import venueVerticalCards from "../components/venueVerticalCards";
+import IndexHero from "../components/IndexHero"
+import FeaturedExperiences from "../components/FeaturedExperiences"
 
 export default {
 	name: "PageIndex",
 
 	components: {
-		venueFilters,
-		venueList,
-		venueHorizontalCards,
-		venueVerticalCards
+		IndexHero,
+		FeaturedExperiences
 	},
 
 	data() {
 		return {
-			displayList: [],
-			budgetRange: null,
-			sortSelected: null
-		};
+			
+		}
 	},
 
 	methods: {
-		updateBudgetRange(val) {
-			this.budgetRange = val;
-		},
-		updateSortSelected(val) {
-			this.sortSelected = val;
-		}
+
 	}
 };
 </script>
+
+<style scoped>
+
+</style>

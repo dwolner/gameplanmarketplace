@@ -20,7 +20,7 @@
 
         <q-drawer
             v-model="leftDrawerOpen"
-            overlay
+            elevated
             side="left"
             content-css="width: 100px;"
         >
@@ -58,9 +58,8 @@ export default {
         return {
             leftDrawerOpen: false,
             menuItems: [
-				{ title: 'vertical cards', route: '/' },
-				{ title: 'horizontal cards', route: '/horizontal' },
-				{ title: 'list', route: '/list' },
+				{ title: 'Home', route: '/' },
+				{ title: 'Marketplace', route: '/market' }
 			]
         }
     },

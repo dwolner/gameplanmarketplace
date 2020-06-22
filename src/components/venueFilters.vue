@@ -1,111 +1,134 @@
 <template>
 	<div>
 		<q-toolbar class="text-primary">
-			<q-btn flat round icon="fas fa-sort-amount-down">
-				<q-menu>
-					<div class="row no-wrap q-pa-md">
-						<div class="column" style="min-width: 150px;">
-							<q-select
-								filled
-								v-model="sortSelected"
-								:options="sortOptions"
-								label="Sort By"
-								stack-label
-								dense
-								options-dense
-							/>
-							<q-btn
-								flat
-								dense
-								size="sm"
-								label="Remove sort"
-								@click="sortSelected = ''"
-							/>
-						</div>
-					</div>
-				</q-menu>
-			</q-btn>
+			<div class="q-px-sm">
+				<q-select
+					filled
+					label="Location"
+					
+					v-model="model"
+					use-input
+					use-chips
+					multiple
+					input-debounce="0"
+					@new-value="createValue"
+					:options="filterOptions"
+					@filter="filterFn"
+				>
+					<template v-slot:prepend>
+						<q-icon name="fas fa-map-marker" />
+					</template>
+				</q-select>
+			</div>
 
-			<q-toolbar-title>
-				Top Results
-			</q-toolbar-title>
+			<div class="q-px-sm">
+				<q-input filled v-model="text" :readonly="readonly" :disable="disable" label="Budget">
+					<template v-slot:prepend>
+						<q-icon name="fas fa-dollar-sign" />
+					</template>
+				</q-input>
+			</div>
 
-			<q-btn flat round icon="fas fa-sliders-h">
-				<q-menu>
-					<div class="row no-wrap q-pa-md">
-						<div class="column" style="min-width: 150px;">
-							<h6 class="q-mb-md">Budget</h6>
-							<q-range
-								v-model="budgetRange"
-								:min="0"
-								:max="200"
-								:step="5"
-								:left-label-value="`$${budgetRange.min}`"
-								:right-label-value="`$${budgetRange.max}`"
-								drag-range
-								label
-								label-always
-								markers
-								snap
-								color="primary"
-							/>
-							<q-separator vertical inset class="q-mx-lg" />
+			<div class="q-px-sm">
+				<q-input filled v-model="text" :readonly="readonly" :disable="disable" label="# of Guests">
+					<template v-slot:prepend>
+						<q-icon name="fas fa-user" />
+					</template>
+				</q-input>
+			</div>
 
-							<h6 class="q-mb-md">Within</h6>
-							<q-slider
-								v-model="distanceRange"
-								:min="0"
-								:max="100"
-								:step="5"
-								:label-value="`${distanceRange} mi.`"
-								label
-								label-always
-								color="primary"
-							/>
-							<q-separator vertical inset class="q-mx-lg" />
-						</div>
-					</div>
-				</q-menu>
-			</q-btn>
+			<div class="q-px-sm">
+				<q-input filled v-model="date" label="Date And Time">
+					<template v-slot:prepend>
+						<q-icon name="fas fa-calendar" class="cursor-pointer">
+						<q-popup-proxy transition-show="scale" transition-hide="scale">
+							<q-date v-model="date" mask="YYYY-MM-DD HH:mm" />
+						</q-popup-proxy>
+						</q-icon>
+					</template>
 
-			<q-btn flat round icon="fas fa-filter">
-				<q-menu>
-					<div class="row no-wrap q-pa-md">
-						<div class="column">
-							<q-input
-								filled
-								bottom-slots
-								v-model="searchTagString"
-								label="Search for tags"
-								dense
-							>
-								<template v-slot:prepend>
-									<q-icon name="fas fa-search" size="xs" />
-								</template>
-								<template v-slot:append>
-									<q-icon
-										name="fas fa-times"
-										@click="searchTagString = ''"
-										class="cursor-pointer"
-										size="xs"
-									/>
-								</template>
-							</q-input>
+					<template v-slot:append>
+						<q-icon name="fas fa-clock" class="cursor-pointer">
+						<q-popup-proxy transition-show="scale" transition-hide="scale">
+							<q-time v-model="date" mask="YYYY-MM-DD HH:mm" format24h />
+						</q-popup-proxy>
+						</q-icon>
+					</template>
+				</q-input>
+			</div>
 
-							<q-toggle
-								v-if="displayTags && displayTags.length"
-								v-for="tag in displayTags"
-								v-model="tag.filter"
-								:label="`${tag.name} (${tag.type})`"
-							/>
-
-						</div>
-					</div>
-				</q-menu>
-			</q-btn>
+			<div class="q-px-sm">
+				<q-btn class="bg-white text-primary full-width" flat size="sm" @click="$router.push('/market')">
+					<q-icon name="fas fa-undo" size="xs" />
+					<span class="">Reset</span>
+				</q-btn>
+			</div>
 		</q-toolbar>
 
-		<q-dialog v-model="showTags"> </q-dialog>
+		<q-dialog v-model="showTags"> 
+			<div class="q-px-sm">
+				<q-select
+					filled
+					label="Location"
+					
+					v-model="model"
+					use-input
+					use-chips
+					multiple
+					input-debounce="0"
+					@new-value="createValue"
+					:options="filterOptions"
+					@filter="filterFn"
+				>
+					<template v-slot:prepend>
+						<q-icon name="fas fa-map-marker" />
+					</template>
+				</q-select>
+			</div>
+
+			<div class="q-px-sm">
+				<q-input filled v-model="text" :readonly="readonly" :disable="disable" label="Budget">
+					<template v-slot:prepend>
+						<q-icon name="fas fa-dollar-sign" />
+					</template>
+				</q-input>
+			</div>
+
+			<div class="q-px-sm">
+				<q-input filled v-model="text" :readonly="readonly" :disable="disable" label="# of Guests">
+					<template v-slot:prepend>
+						<q-icon name="fas fa-user" />
+					</template>
+				</q-input>
+			</div>
+
+			<div class="q-px-sm">
+				<q-input filled v-model="date" label="Date And Time">
+					<template v-slot:prepend>
+						<q-icon name="fas fa-calendar" class="cursor-pointer">
+						<q-popup-proxy transition-show="scale" transition-hide="scale">
+							<q-date v-model="date" mask="YYYY-MM-DD HH:mm" />
+						</q-popup-proxy>
+						</q-icon>
+					</template>
+
+					<template v-slot:append>
+						<q-icon name="fas fa-clock" class="cursor-pointer">
+						<q-popup-proxy transition-show="scale" transition-hide="scale">
+							<q-time v-model="date" mask="YYYY-MM-DD HH:mm" format24h />
+						</q-popup-proxy>
+						</q-icon>
+					</template>
+				</q-input>
+			</div>
+
+			<div class="q-px-sm">
+				<q-btn class="bg-white text-primary full-width" flat size="sm" @click="$router.push('/market')">
+					<q-icon name="fas fa-undo" size="xs" />
+					<span class="">Reset</span>
+				</q-btn>
+			</div>
+		</q-dialog>
 	</div>
 </template>
 

@@ -6,12 +6,8 @@ const routes = [
     children: [
       { path: '', component: () => import('pages/Index.vue') },
       {
-        path: 'horizontal',
-        component: () => import('pages/Index-horizontal.vue')
-      },
-      {
-        path: 'list',
-        component: () => import('pages/Index-list.vue')
+        path: 'market',
+        component: () => import('pages/Marketplace.vue')
       }
     ]
   }
