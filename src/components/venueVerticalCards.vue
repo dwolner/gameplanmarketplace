@@ -11,15 +11,12 @@
 </template>
 
 <script>
-import { venues } from "../js/venues.js";
-console.log("venues: ", venues);
-
 import venueVerticalCard from "../components/venueVerticalCard"
 
 export default {
 	name: "venueCards",
 
-	props: ["budgetRange", "sortSelected"],
+	props: ["allVenues", "budgetRange", "sortSelected"],
 
 	components: {
 		venueVerticalCard
@@ -27,7 +24,7 @@ export default {
 
 	data() {
 		return {
-			allVenues: venues
+			// allVenues: venues
 		}
 	},
 
@@ -35,29 +32,29 @@ export default {
 		displayList() {
 			let displayList = this.allVenues;
 
-			if (this.budgetRange) {
-				console.log("budgetRange: ", this.budgetRange);
-				displayList = displayList.filter(
-					item =>
-						item.price > this.budgetRange.min &&
-						item.price < this.budgetRange.max
-				);
-			}
+			// if (this.budgetRange) {
+			// 	console.log("budgetRange: ", this.budgetRange);
+			// 	displayList = displayList.filter(
+			// 		item =>
+			// 			item.price > this.budgetRange.min &&
+			// 			item.price < this.budgetRange.max
+			// 	);
+			// }
 
-			if (this.sortSelected) {
-				let key = this.sortSelected.toLowerCase();
-				console.log("sortSelected: ", key);
+			// if (this.sortSelected) {
+			// 	let key = this.sortSelected.toLowerCase();
+			// 	console.log("sortSelected: ", key);
 
-				displayList.sort((a, b) => {
-					if (a[key] < b[key]) {
-						return -1;
-					}
-					if (a[key] > b[key]) {
-						return 1;
-					}
-					return 0;
-				});
-			}
+			// 	displayList.sort((a, b) => {
+			// 		if (a[key] < b[key]) {
+			// 			return -1;
+			// 		}
+			// 		if (a[key] > b[key]) {
+			// 			return 1;
+			// 		}
+			// 		return 0;
+			// 	});
+			// }
 
 			return displayList;
 		}

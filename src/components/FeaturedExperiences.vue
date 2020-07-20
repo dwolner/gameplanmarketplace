@@ -16,15 +16,12 @@
 </template>
 
 <script>
-import { venues } from "../js/venues.js";
-console.log("venues: ", venues);
-
 import venueVerticalCard from "../components/venueVerticalCard"
 
 export default {
 	name: "venueCards",
 
-	props: ["budgetRange", "sortSelected"],
+	props: ["allVenues", "budgetRange", "sortSelected"],
 
 	components: {
 		venueVerticalCard
@@ -32,7 +29,7 @@ export default {
 
 	data() {
 		return {
-			allVenues: venues
+			// allVenues: venues
 		}
 	},
 

@@ -1,1 +1,9 @@
 gameplan logos
+
+
+
+experiences
+`book.getgameplan.com/view/${ id }`
+
+shops
+`shop.getgameplan.com/s/${ slug }`

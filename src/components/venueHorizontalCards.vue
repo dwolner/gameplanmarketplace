@@ -30,15 +30,13 @@
 </template>
 
 <script>
-import { venues } from '../js/venues.js'
-console.log('venues: ', venues)
 
 export default {
     name: 'venueCards',
 
     data() {
         return {
-            displayList: venues
+            displayList: []
         }
     },
 }
