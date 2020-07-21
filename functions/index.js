@@ -13,9 +13,14 @@ function loadConfig() {
 	}
 }
 
+Array.prototype.unique = function () {
+	return this.filter((value, index, self) => {
+		return self.indexOf(value) === index;
+	});
+};
+
 const config = loadConfig();
 
-// dev: convert to env file to not commit live credentials?
 let getEntity = async (type, params) => {
 	let paramString = ''
 
@@ -38,7 +43,7 @@ let getEntity = async (type, params) => {
 
 		let end = new Date().valueOf();
 
-		console.log(`EntityDS: ${config.entityds.url}/v1/entity/${type} (${res.data.length} results in ${end - start} ms)`);
+		console.log(`EntityDS: ${config.entityds.url}/v1/entity/${type} (${res.data.length} results in ${end - start} ms, started at ${start})`);
 
 		return res.data
 	} catch (error) {
@@ -56,29 +61,19 @@ let createBusinessTagObjFromIDs = (IDs, key) => {
 	})
 }
 
-let getBusinesses = async () => {
-	return await getEntity('business', [{
-		key : 'hasExperiences',
-		val : true
-	}, {
-		key : 'hasShops',
-		val : true
-	}])
-}
-
 let mediaUrl = (media, business) => {
 	const mediaUrl = url.parse(media.url);
 
 	if (mediaUrl.protocol === "cdn:") {
-		const host = mediaUrl.host;
-		let config = business.provider_configuration.cdn || {};
-		config     = config.hasOwnProperty(host) ? config[host] : null;
-		const path = mediaUrl.pathname.replace(/^\/+|\/+$/g, '');
+		const host    = mediaUrl.host;
+		let bizConfig = business.provider_configuration.cdn || {};
+		bizConfig     = bizConfig.hasOwnProperty(host) ? bizConfig[host] : null;
+		const path    = mediaUrl.pathname.replace(/^\/+|\/+$/g, '');
 
 		const cdn = "https://cdn.getgameplan.com";
 
-		if (config !== null) {
-			return cdn + "/" + config.replace(/^\/+|\/+$/g, '') + "/" + path;
+		if (bizConfig !== null) {
+			return cdn + "/" + bizConfig.replace(/^\/+|\/+$/g, '') + "/" + path;
 		} else {
 			switch (config.environment) {
 				case "staging":
@@ -100,74 +95,60 @@ let collectDataForBusinesses = async () => {
 
 	// map all venues with their tags, experiences, and shops
 
-	let businesses = await getBusinesses()
-
-	// dev: create businessesTags from businesses
-	let businessesTags = businesses.map(biz => biz.id);
-
-	let responses = await Promise.all([
-		getEntity('tag'),
-
-		// TODO: Implement media, retrieving all media for a business is too much since it could be for 100 products
-		Promise.resolve('Implement media'),
-		// getEntity('media', [{
-		// 	key : 'types',
-		// 	val : 'PHOTO'
-		// },
-		// 	...createBusinessTagObjFromIDs(businessesTags, 'businesses')
-		// ]),
-
+	return await Promise.all([
 		getEntity('experience', [{
 			key : 'listedMarketplace',
 			val : true
-		},
-			...createBusinessTagObjFromIDs(businessesTags, 'businessIds')
-		]),
+		}]),
 
 		getEntity('shop', [{
 			key : 'listedMarketplace',
 			val : true
-		},
-			...createBusinessTagObjFromIDs(businessesTags, 'businessIds')
-		])
-	]);
+		}]),
 
-	let businessData = businesses.map((business) => {
-		let id = parseInt(business.id)
+		// Tags don't necessarily need to be loaded if they're already stored on the client from the other endpoint
+		// getEntity('tag')
+	]).then(async (responses) => {
+		let businessIds = [...responses[0].map(e => e.business_id), ...responses[1].map(e => e.business_id)].unique();
 
-		let buttons = [
-			...responses[2].filter(exp => parseInt(exp.business_id) === id).map((exp) => ({
-				type        : 'experience',
-				name        : experience.name,
-				destination : 'https://book.getgameplan.com/view/' + experience.id,
-			})),
-			...responses[3].filter(shop => parseInt(shop.business_id) === id).map((shop) => ({
-				type        : 'shop',
-				name        : shop.name,
-				destination : 'https://shop.getgameplan.com/s/' + shop.slug,
-			}))
-		];
+		let businesses = await getEntity('business', [
+			...createBusinessTagObjFromIDs(businessIds, 'id')
+		]);
 
-		if (buttons.length === 0)
-			return null;
+		// TODO: load media
 
-		return {
-			id          : id,
-			name        : business.name,
-			description : business.description,
-			buttons     : buttons,
-			tags        : business.tags,
-			location    : {
-				address     : business.location_address,
-				coordinates : {
-					lat : business.latitude,
-					lon : business.longitude
+		return businesses.map((business) => {
+			let id = parseInt(business.id)
+
+			let buttons = [
+				...responses[0].filter(exp => parseInt(exp.business_id) === id).map((experience) => ({
+					type        : 'experience',
+					name        : experience.name,
+					destination : 'https://book.getgameplan.com/view/' + experience.id,
+				})),
+				...responses[1].filter(shop => parseInt(shop.business_id) === id).map((shop) => ({
+					type        : 'shop',
+					name        : shop.name,
+					destination : 'https://shop.getgameplan.com/s/' + shop.slug,
+				}))
+			];
+
+			return {
+				id          : id,
+				name        : business.name,
+				description : business.description,
+				buttons     : buttons,
+				tags        : business.tags,
+				location    : {
+					address     : business.location_address,
+					coordinates : {
+						lat : business.latitude,
+						lon : business.longitude
+					}
 				}
-			}
-		};
-	}).filter(b => b);
-
-	return businessData
+			};
+		});
+	});
 }
 
 // Create and Deploy Your First Cloud Functions
