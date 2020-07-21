@@ -1,8 +1,8 @@
 {
-  "environment": "staging",
-  "entityds": {
-    "url": "https://platform-staging.getgameplan.com/entityds",
-    "username": "test",
-    "password": "test"
-  }
+	"environment": "staging",
+	"entityds": {
+		"url": "https://platform-staging.getgameplan.com/entityds",
+		"username": "test",
+		"password": "test"
+	}
 }
